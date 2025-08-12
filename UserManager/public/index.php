@@ -1,5 +1,12 @@
 <?php
 
+// --- INÍCIO DO CÓDIGO DE DEBUG ---
+// ATENÇÃO: REMOVA ISSO ANTES DE FINALIZAR
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// --- FIM DO CÓDIGO DE DEBUG ---
+
 use EditorIA2\UserManager\Controller\UserController;
 
 // Define o header para JSON

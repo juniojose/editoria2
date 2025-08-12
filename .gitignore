@@ -1,0 +1,5 @@
+# Dependencies
+/UserManager/vendor/
+
+# Environment file
+/UserManager/.env

@@ -1,0 +1,14 @@
+{
+    "name": "editoria2/user-manager",
+    "description": "Microserviço de gerenciamento de usuários",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "EditorIA2\\UserManager\\": "src/"
+        }
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

@@ -8,16 +8,12 @@ header("Content-Type: application/json; charset=UTF-8");
 // Autoloader do Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Analisa a requisição
+// Analisa a requisição a partir do parâmetro 'route' fornecido pelo .htaccess
 $method = $_SERVER['REQUEST_METHOD'];
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$route = $_GET['route'] ?? '';
 
-// Normaliza o caminho para remover a referência ao diretório do projeto se estiver rodando em um subdiretório
-// Ex: /EditorIA2/UserManager/public/register -> /register
-$scriptName = dirname($_SERVER['SCRIPT_NAME']);
-if (strpos($path, $scriptName) === 0) {
-    $path = substr($path, strlen($scriptName));
-}
+// Normaliza o caminho para garantir que ele comece com uma barra
+$path = '/' . trim($route, '/');
 
 
 // Função para enviar resposta JSON
@@ -44,10 +40,20 @@ $routes = [
     },
 ];
 
+// Adiciona uma rota para a raiz, se necessário
+if ($path === '/' || $path === '') {
+    if ($method === 'GET') {
+        json_response(['status' => 'success', 'message' => 'API do UserManager está online.']);
+    } else {
+        json_response(['status' => 'error', 'message' => 'Método não permitido para a raiz.'], 405);
+    }
+    exit;
+}
+
 $routeKey = "$method $path";
 
 if (array_key_exists($routeKey, $routes)) {
     $routes[$routeKey]();
 } else {
-    json_response(['status' => 'error', 'message' => 'Endpoint não encontrado ou método não permitido.'], 404);
+    json_response(['status' => 'error', 'message' => "Endpoint [{$path}] não encontrado ou método não permitido."], 404);
 }

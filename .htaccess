@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Define a base para as regras de reescrita
+    RewriteBase /editoria2/
+
+    # Re-escreve tudo para o index.php, passando a rota como um parâmetro 'route'
+    RewriteRule ^(.*)$ UserManager/public/index.php?route=$1 [L,QSA]
+</IfModule>

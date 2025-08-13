@@ -42,7 +42,7 @@
 
 ---
 
-# Progresso da Implementação (Até 12/08/2025)
+# Progresso da Implementação (Até 13/08/2025)
 
 ## Fase 1: CONCLUÍDA
 
@@ -65,14 +65,16 @@
 
 *   **Roteamento e Requisições:**
     *   O Front Controller `public/index.php` foi criado.
-    *   Um roteador simples foi implementado para lidar com as rotas da API.
+    *   Um roteador simples foi implementado para lidar com as rotas da API, inclusive com reescrita via `.htaccess` para subdiretórios.
 
-*   **Endpoint: `POST /register` (CONCLUÍDO):**
+*   **Endpoint: `POST /register` (VALIDADO):**
     *   `Model/User.php`: Criado para representar a entidade de usuário.
-    *   `Repository/UserRepository.php`: Implementado com métodos `findByEmail`, `findByCpfCnpj`, e `create` (renomeado de `save`).
-    *   `Service/UserService.php`: Criado com a lógica de negócio para registrar um novo usuário, incluindo validação, verificação de duplicados e hashing de senha.
-    *   `Controller/UserController.php`: Implementado para lidar com a requisição HTTP, chamar o serviço e retornar a resposta JSON apropriada.
+    *   `Repository/UserRepository.php`: Implementado com métodos `findByEmail`, `findByCpfCnpj`, e `create`.
+    *   `Service/UserService.php`: Criado com a lógica de negócio para registrar um novo usuário.
+    *   `Controller/UserController.php`: Implementado para lidar com a requisição HTTP.
     *   A rota em `public/index.php` foi conectada ao `UserController`.
+    *   **Testado e validado com sucesso em ambiente de servidor em 13/08/2025.**
 
 *   **Endpoint: `POST /verify-email` (INICIADO):**
     *   `Repository/UserRepository.php`: Atualizado com os métodos `findByVerificationToken` e `update`.
+    *   `Service/UserService.php`: Atualizado com o método `verifyEmail`.

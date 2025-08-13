@@ -27,7 +27,6 @@ class UserService
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Formato de e-mail inválido.", 400);
         }
-        // Adicionar mais validações (força da senha, formato do CPF/CNPJ) depois
 
         // 2. Verificar se o usuário já existe
         if ($this->userRepository->findByEmail($email)) {
@@ -53,18 +52,40 @@ class UserService
         $user->cpf_cnpj = $cpfCnpj;
         $user->password_hash = $passwordHash;
         $user->email_verification_token = $verificationToken;
-        // Outros campos terão valores padrão definidos no DB
 
         // 6. Salvar o usuário
-        $success = $this->userRepository->save($user);
+        $success = $this->userRepository->create($user);
         if (!$success) {
             throw new Exception("Não foi possível registrar o usuário.", 500);
         }
         
         // 7. Retornar o usuário (sem o hash da senha)
-        // Em uma aplicação real, buscaríamos o usuário recém-criado do banco para ter o ID e outras colunas
-        // Por simplicidade, vamos apenas retornar o objeto que temos.
         unset($user->password_hash);
         return $user;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function verifyEmail(string $token): bool
+    {
+        if (empty($token)) {
+            throw new Exception("O token de verificação é obrigatório.", 400);
+        }
+
+        $user = $this->userRepository->findByVerificationToken($token);
+
+        if (!$user) {
+            throw new Exception("Token de verificação inválido ou expirado.", 404);
+        }
+
+        if ($user->status === 'active') {
+            throw new Exception("Este e-mail já foi verificado.", 409);
+        }
+
+        $user->status = 'active';
+        $user->email_verification_token = null;
+
+        return $this->userRepository->update($user);
     }
 }

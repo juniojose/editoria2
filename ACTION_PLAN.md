@@ -11,7 +11,7 @@
 1.  **Roteamento e Requisições:** OK
 2.  **Endpoint: `POST /register`**: OK
 3.  **Endpoint: `POST /verify-email`**: OK
-4.  **Endpoint: `POST /reset-password`**: A FAZER
+4.  **Endpoint: `POST /reset-password`**: OK
 
 ## Fase 3: Finalização e Boas Práticas
 
@@ -27,7 +27,7 @@
 
 *   Toda a estrutura de diretórios, configuração de ambiente com Composer e setup do banco de dados com migração e variáveis de ambiente foram concluídos.
 
-## Fase 2 & 3: EM ANDAMENTO
+## Fase 2 & 3: CONCLUÍDAS (Endpoints da API)
 
 *   **Roteamento e Requisições (CONCLUÍDO):**
     *   O Front Controller `public/index.php` foi criado.
@@ -40,12 +40,13 @@
 *   **Endpoint: `POST /register` (CONCLUÍDO E VALIDADO):**
     *   Arquitetura completa (Model, Repository, Service, Controller) implementada.
     *   Integrado com o `EmailService` para disparar o e-mail de verificação no momento do registro.
-    *   **Testado e validado com sucesso em ambiente de servidor em 13/08/2025.**
 
 *   **Endpoint: `POST /verify-email` (CONCLUÍDO E VALIDADO):**
     *   A lógica de validação do token no `UserService` e `UserRepository` foi implementada.
-    *   Uma página (`verify-email.php`) foi criada para fornecer uma interface amigável ao usuário, que chama a API nos bastidores.
-    *   O fluxo completo, desde o clique no link do e-mail até a atualização no banco de dados, foi **testado e validado com sucesso em ambiente de servidor em 13/08/2025.**
+    *   Uma página (`verify-email.php`) foi criada para fornecer uma interface amigável ao usuário.
+    *   O fluxo completo foi testado e validado com sucesso.
 
-*   **Endpoint: `POST /reset-password` (A FAZER):**
-    *   A lógica de negócio e os endpoints (`/forgot-password` e `/reset-password`) precisam ser implementados.
+*   **Endpoint: `POST /reset-password` (CONCLUÍDO E VALIDADO):**
+    *   A lógica de negócio para solicitar (`/forgot-password`) e executar (`/reset-password`) a redefinição foi implementada no `UserService` e `UserController`.
+    *   Uma página (`reset-password.php`) foi criada para a interface do usuário.
+    *   O fluxo completo, desde a solicitação por e-mail até a atualização da senha, foi **testado e validado com sucesso em ambiente de servidor em 13/08/2025.**

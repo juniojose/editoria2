@@ -4,6 +4,8 @@
     # Define a base para as regras de reescrita
     RewriteBase /editoria2/
 
-    # Re-escreve tudo para o index.php, passando a rota como um parâmetro 'route'
+    # Se o arquivo ou diretório solicitado não existir, reescreve para o index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ UserManager/public/index.php?route=$1 [L,QSA]
 </IfModule>

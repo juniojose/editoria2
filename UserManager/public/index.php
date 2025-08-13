@@ -30,7 +30,8 @@ $routes = [
         $controller->register();
     },
     'POST /verify-email' => function () {
-        json_response(['status' => 'success', 'message' => 'Endpoint /verify-email atingido.']);
+        $controller = new UserController();
+        $controller->verifyEmail();
     },
     'POST /forgot-password' => function () {
         json_response(['status' => 'success', 'message' => 'Endpoint /forgot-password atingido.']);

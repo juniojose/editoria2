@@ -55,4 +55,35 @@ class UserController
             json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
         }
     }
+
+    public function verifyEmail()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            json_response(['status' => 'error', 'message' => 'JSON inválido.'], 400);
+            return;
+        }
+
+        $token = $input['token'] ?? null;
+
+        if (!$token) {
+            json_response(['status' => 'error', 'message' => 'O token é obrigatório.'], 400);
+            return;
+        }
+
+        try {
+            $pdo = require __DIR__ . '/../../config/database.php';
+            $userRepository = new UserRepository($pdo);
+            $userService = new UserService($userRepository);
+
+            $userService->verifyEmail($token);
+
+            json_response(['status' => 'success', 'message' => 'E-mail verificado com sucesso.']);
+
+        } catch (Exception $e) {
+            $statusCode = $e->getCode() >= 400 ? $e->getCode() : 500;
+            json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
+        }
+    }
 }

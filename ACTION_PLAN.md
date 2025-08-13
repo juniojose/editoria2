@@ -37,7 +37,12 @@
     *   Reforçar a validação de todas as entradas da API.
     *   Implementar tratamento de erros consistente.
 
-2.  **Documentação:**
+2.  **Implementação do Serviço de Envio de E-mail:**
+    *   Adicionar uma biblioteca de envio de e-mail (ex: PHPMailer ou Symfony Mailer).
+    *   Criar uma classe de serviço (`EmailService`) para abstrair o envio dos e-mails de verificação e de redefinição de senha.
+    *   Integrar o `EmailService` no `UserService`.
+
+3.  **Documentação:**
     *   Criar um `README.md` para o microserviço.
 
 ---
@@ -46,35 +51,25 @@
 
 ## Fase 1: CONCLUÍDA
 
-*   **Estrutura de Diretórios:**
-    *   O diretório `EditorIA2/UserManager/` foi criado.
-    *   A estrutura interna (`public`, `src`, `config`, `database/migrations`) foi criada.
-    *   A arquitetura de separação de responsabilidades foi definida em `src/` com os diretórios `Controller`, `Service`, `Repository` e `Model`.
-
-*   **Configuração do Ambiente PHP:**
-    *   `composer.json` foi inicializado e configurado.
-    *   O autoloading PSR-4 para o namespace `EditorIA2\UserManager` foi configurado para apontar para `src/`.
-    *   A dependência `vlucas/phpdotenv` foi adicionada e instalada, criando o diretório `vendor/`.
-
-*   **Banco de Dados e Configuração:**
-    *   O script de migração `database/migrations/001_create_users_table.sql` foi criado com a estrutura da tabela `users`.
-    *   O arquivo de exemplo de variáveis de ambiente `.env.example` foi criado.
-    *   O script de conexão com o banco de dados `config/database.php` foi implementado usando PDO e `dotenv`.
+*   **Estrutura de Diretórios:** OK
+*   **Configuração do Ambiente PHP:** OK
+*   **Banco de Dados e Configuração:** OK
 
 ## Fase 2: EM ANDAMENTO
 
 *   **Roteamento e Requisições:**
-    *   O Front Controller `public/index.php` foi criado.
-    *   Um roteador simples foi implementado para lidar com as rotas da API, inclusive com reescrita via `.htaccess` para subdiretórios.
+    *   O Front Controller `public/index.php` foi criado e a lógica de roteamento foi corrigida.
 
 *   **Endpoint: `POST /register` (VALIDADO):**
-    *   `Model/User.php`: Criado para representar a entidade de usuário.
-    *   `Repository/UserRepository.php`: Implementado com métodos `findByEmail`, `findByCpfCnpj`, e `create`.
-    *   `Service/UserService.php`: Criado com a lógica de negócio para registrar um novo usuário.
-    *   `Controller/UserController.php`: Implementado para lidar com a requisição HTTP.
-    *   A rota em `public/index.php` foi conectada ao `UserController`.
-    *   **Testado e validado com sucesso em ambiente de servidor em 13/08/2025.**
+    *   Arquitetura completa (Model, Repository, Service, Controller) implementada.
+    *   **NOTA:** O envio de e-mail de verificação ainda não foi implementado (ver Fase 3).
 
-*   **Endpoint: `POST /verify-email` (INICIADO):**
+*   **Endpoint: `POST /verify-email` (VALIDADO):**
     *   `Repository/UserRepository.php`: Atualizado com os métodos `findByVerificationToken` e `update`.
     *   `Service/UserService.php`: Atualizado com o método `verifyEmail`.
+    *   `Controller/UserController.php`: Implementado para lidar com a requisição.
+    *   A rota em `public/index.php` foi conectada e corrigida.
+    *   **Testado e validado com sucesso em ambiente de servidor em 13/08/2025.**
+
+*   **Endpoint: `POST /reset-password` (A FAZER):**
+    *   A lógica de negócio e os endpoints (`/forgot-password` e `/reset-password`) precisam ser implementados.

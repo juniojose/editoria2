@@ -89,4 +89,58 @@ class UserController
             json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
         }
     }
+
+    public function forgotPassword()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $email = $input['email'] ?? null;
+
+        if (!$email) {
+            json_response(['status' => 'error', 'message' => 'O campo e-mail é obrigatório.'], 400);
+            return;
+        }
+
+        try {
+            $pdo = require __DIR__ . '/../../config/database.php';
+            $userRepository = new UserRepository($pdo);
+            $emailService = new EmailService();
+            $userService = new UserService($userRepository, $emailService);
+
+            $userService->forgotPassword($email);
+
+            // Resposta genérica para não revelar se um e-mail existe no sistema
+            json_response(['status' => 'success', 'message' => 'Se um usuário com este e-mail existir, um link de redefinição de senha foi enviado.']);
+
+        } catch (Exception $e) {
+            $statusCode = $e->getCode() >= 400 ? $e->getCode() : 500;
+            json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
+        }
+    }
+
+    public function resetPassword()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $token = $input['token'] ?? null;
+        $password = $input['password'] ?? null;
+
+        if (!$token || !$password) {
+            json_response(['status' => 'error', 'message' => 'O token e a nova senha são obrigatórios.'], 400);
+            return;
+        }
+
+        try {
+            $pdo = require __DIR__ . '/../../config/database.php';
+            $userRepository = new UserRepository($pdo);
+            $emailService = new EmailService();
+            $userService = new UserService($userRepository, $emailService);
+
+            $userService->resetPassword($token, $password);
+
+            json_response(['status' => 'success', 'message' => 'Senha redefinida com sucesso.']);
+
+        } catch (Exception $e) {
+            $statusCode = $e->getCode() >= 400 ? $e->getCode() : 500;
+            json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
+        }
+    }
 }

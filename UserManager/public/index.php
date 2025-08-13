@@ -40,10 +40,12 @@ $routes = [
         $controller->verifyEmail();
     },
     'POST /forgot-password' => function () {
-        json_response(['status' => 'success', 'message' => 'Endpoint /forgot-password atingido.']);
+        $controller = new UserController();
+        $controller->forgotPassword();
     },
     'POST /reset-password' => function () {
-        json_response(['status' => 'success', 'message' => 'Endpoint /reset-password atingido.']);
+        $controller = new UserController();
+        $controller->resetPassword();
     },
 ];
 

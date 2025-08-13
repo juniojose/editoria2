@@ -53,6 +53,19 @@ class UserRepository
         return $this->hydrateUser($userData);
     }
 
+    public function findByPasswordResetToken(string $token): ?User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE password_reset_token = ?");
+        $stmt->execute([$token]);
+        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$userData) {
+            return null;
+        }
+
+        return $this->hydrateUser($userData);
+    }
+
     public function create(User $user): bool
     {
         $stmt = $this->pdo->prepare(

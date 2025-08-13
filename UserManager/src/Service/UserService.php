@@ -99,4 +99,74 @@ class UserService
 
         return $this->userRepository->update($user);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function forgotPassword(string $email): void
+    {
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Formato de e-mail inválido.", 400);
+        }
+
+        $user = $this->userRepository->findByEmail($email);
+
+        // Para evitar enumeração de usuários, não retornamos erro se o e-mail não for encontrado.
+        // Apenas enviamos o e-mail se o usuário existir e estiver ativo.
+        if ($user && $user->status === 'active') {
+            // Gerar token e data de expiração
+            $resetToken = bin2hex(random_bytes(32));
+            $expiresAt = new \DateTimeImmutable('+1 hour');
+
+            $user->password_reset_token = $resetToken;
+            $user->password_reset_expires_at = $expiresAt->format('Y-m-d H:i:s');
+
+            $this->userRepository->update($user);
+
+            // Enviar e-mail de redefinição de senha
+            $resetLink = $_ENV['APP_URL'] . '/reset-password.php?token=' . $resetToken;
+            $subject = 'Redefinição de Senha';
+            $body = "<p>Olá, {$user->name},</p>"
+                  . "<p>Recebemos uma solicitação para redefinir sua senha. Se não foi você, por favor, ignore este e-mail.</p>"
+                  . "<p>Para continuar, clique no link abaixo. Este link é válido por 1 hora:</p>"
+                  . "<p><a href=\"{$resetLink}\">{$resetLink}</a></p>";
+
+            $this->emailService->sendEmail($user->email, $user->name, $subject, $body);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function resetPassword(string $token, string $newPassword): bool
+    {
+        if (empty($token) || empty($newPassword)) {
+            throw new Exception("O token e a nova senha são obrigatórios.", 400);
+        }
+
+        $user = $this->userRepository->findByPasswordResetToken($token);
+
+        if (!$user) {
+            throw new Exception("Token de redefinição de senha inválido.", 404);
+        }
+
+        // Verificar se o token expirou
+        $expiresAt = new \DateTimeImmutable($user->password_reset_expires_at);
+        if (new \DateTimeImmutable() > $expiresAt) {
+            throw new Exception("Token de redefinição de senha expirado.", 400);
+        }
+
+        // Hash da nova senha
+        $passwordHash = password_hash($newPassword, PASSWORD_ARGON2ID);
+        if ($passwordHash === false) {
+            throw new Exception("Erro ao gerar hash da nova senha.", 500);
+        }
+
+        // Atualizar usuário
+        $user->password_hash = $passwordHash;
+        $user->password_reset_token = null;
+        $user->password_reset_expires_at = null;
+
+        return $this->userRepository->update($user);
+    }
 }

@@ -8,9 +8,15 @@ header("Content-Type: application/json; charset=UTF-8");
 // Autoloader do Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Analisa a requisição a partir do parâmetro 'route' fornecido pelo .htaccess
+ // Analisa a requisição a partir do parâmetro 'route' fornecido pelo .htaccess
 $method = $_SERVER['REQUEST_METHOD'];
 $route = $_GET['route'] ?? '';
+
+// Remove o prefixo do caminho se ele existir, para ajustar o roteamento
+$prefix = 'UserManager/public/';
+if (strpos($route, $prefix) === 0) {
+    $route = substr($route, strlen($prefix));
+}
 
 // Normaliza o caminho para garantir que ele comece com uma barra
 $path = '/' . trim($route, '/');

@@ -9,10 +9,12 @@ use Exception;
 class UserService
 {
     private UserRepository $userRepository;
+    private EmailService $emailService;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, EmailService $emailService)
     {
         $this->userRepository = $userRepository;
+        $this->emailService = $emailService;
     }
 
     /**
@@ -58,8 +60,17 @@ class UserService
         if (!$success) {
             throw new Exception("Não foi possível registrar o usuário.", 500);
         }
-        
-        // 7. Retornar o usuário (sem o hash da senha)
+
+        // 7. Enviar e-mail de verificação
+        $verificationLink = $_ENV['APP_URL'] . '/verify-email.php?token=' . $verificationToken; // Exemplo de link
+        $subject = 'Verifique seu endereço de e-mail';
+        $body = "<p>Olá, {$user->name},</p>"
+              . "<p>Obrigado por se registrar. Por favor, clique no link abaixo para verificar seu e-mail:</p>"
+              . "<p><a href=\"{$verificationLink}\">{$verificationLink}</a></p>";
+
+        $this->emailService->sendEmail($user->email, $user->name, $subject, $body);
+
+        // 8. Retornar o usuário (sem o hash da senha)
         unset($user->password_hash);
         return $user;
     }

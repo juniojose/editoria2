@@ -3,6 +3,7 @@
 namespace EditorIA2\UserManager\Controller;
 
 use EditorIA2\UserManager\Repository\UserRepository;
+use EditorIA2\UserManager\Service\EmailService;
 use EditorIA2\UserManager\Service\UserService;
 use Exception;
 
@@ -33,7 +34,8 @@ class UserController
             // d. Manual Dependency Injection
             $pdo = require __DIR__ . '/../../config/database.php';
             $userRepository = new UserRepository($pdo);
-            $userService = new UserService($userRepository);
+            $emailService = new EmailService();
+            $userService = new UserService($userRepository, $emailService);
 
             // e. Call the service
             $newUser = $userService->registerUser($name, $email, $cpfCnpj, $password);
@@ -75,7 +77,8 @@ class UserController
         try {
             $pdo = require __DIR__ . '/../../config/database.php';
             $userRepository = new UserRepository($pdo);
-            $userService = new UserService($userRepository);
+            $emailService = new EmailService(); // Embora não usado diretamente por verifyEmail, é necessário para o construtor do UserService
+            $userService = new UserService($userRepository, $emailService);
 
             $userService->verifyEmail($token);
 

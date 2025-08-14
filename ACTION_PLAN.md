@@ -70,9 +70,9 @@
     *   Criada migração para a tabela `applications`.
     *   Implementado script `generate-token.php` para geração de tokens de API.
 
-2.  **Autenticação e Conexão Dinâmica:** A FAZER
-    *   Implementar middleware para validação do `X-API-Token`.
-    *   Refatorar o container de DI para criar conexões de banco de dados dinâmicas.
+2.  **Autenticação e Conexão Dinâmica:** OK
+    *   Implementado middleware em `index.php` para validar o `X-API-Token`.
+    *   Refatorado o container de DI para criar conexões de banco de dados dinâmicas por inquilino.
 
 3.  **Integração e Finalização:** A FAZER
     *   Atualizar a documentação da API com as novas regras de autenticação.

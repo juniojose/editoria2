@@ -9,63 +9,79 @@ use EditorIA2\UserManager\Service\ValidationService;
 // Define o header para JSON
 header("Content-Type: application/json; charset=UTF-8");
 
-// Autoloader do Composer
-require_once __DIR__ . '/../vendor/autoload.php';
-
-// Analisa a requisição a partir do parâmetro 'route' fornecido pelo .htaccess
-$method = $_SERVER['REQUEST_METHOD'];
-$route = $_GET['route'] ?? '';
-
-// Remove o prefixo do caminho se ele existir, para ajustar o roteamento
-$prefix = 'UserManager/public/';
-if (strpos($route, $prefix) === 0) {
-    $route = substr($route, strlen($prefix));
-}
-
-// Normaliza o caminho para garantir que ele comece com uma barra
-$path = '/' . trim($route, '/');
-
-// Função para enviar resposta JSON
-function json_response($data, $statusCode = 200) {
+// --- Função de Resposta JSON ---
+function json_response($data, $statusCode = 200)
+{
     http_response_code($statusCode);
     echo json_encode($data);
     exit;
 }
 
-// --- Container de Injeção de Dependência Simples ---
-$dependencies = [];
+// --- Autoloader e Variáveis de Ambiente ---
+require_once __DIR__ . '/../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
-$dependencies['pdo'] = function () {
-    return require __DIR__ . '/../config/database.php';
-};
+// --- Middleware de Autenticação da Aplicação ---
+$apiToken = $_SERVER['HTTP_X_API_TOKEN'] ?? null;
 
-$dependencies[UserRepository::class] = function ($c) {
-    return new UserRepository($c['pdo']());
-};
+if (!$apiToken) {
+    json_response(['status' => 'error', 'message' => 'Acesso não autorizado. O token da API não foi fornecido.'], 401);
+}
 
-$dependencies[EmailService::class] = function () {
-    return new EmailService();
-};
+// Conecta ao banco de dados de gerenciamento para validar o token
+try {
+    $mgmtDsn = "mysql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_DATABASE']};charset=utf8mb4";
+    $mgmtPdo = new PDO($mgmtDsn, $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+    ]);
 
-$dependencies[ValidationService::class] = function () {
-    return new ValidationService();
-};
+    $stmt = $mgmtPdo->prepare("SELECT * FROM applications WHERE api_token = ? AND status = 'active'");
+    $stmt->execute([$apiToken]);
+    $application = $stmt->fetch();
 
-$dependencies[UserService::class] = function ($c) {
-    return new UserService(
-        $c[UserRepository::class]($c),
-        $c[EmailService::class]($c),
-        $c[ValidationService::class]($c)
-    );
-};
+    if (!$application) {
+        json_response(['status' => 'error', 'message' => 'Acesso proibido. O token da API é inválido ou a aplicação está inativa.'], 403);
+    }
+} catch (PDOException $e) {
+    json_response(['status' => 'error', 'message' => 'Erro interno do servidor.'], 500);
+}
 
-$dependencies[UserController::class] = function ($c) {
-    return new UserController($c[UserService::class]($c));
-};
+// --- Conexão com o Banco de Dados do Inquilino (Tenant) ---
+try {
+    $tenantDsn = "mysql:host={$application['db_host']};port={$application['db_port']};dbname={$application['db_database']};charset=utf8mb4";
+    $tenantPdo = new PDO($tenantDsn, $application['db_username'], $application['db_password'], [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+    ]);
+} catch (PDOException $e) {
+    json_response(['status' => 'error', 'message' => 'Não foi possível conectar ao banco de dados da aplicação.'], 500);
+}
 
-// --- Fim do Container ---
+// --- Container de Injeção de Dependência Dinâmico (pós-autenticação) ---
+$container = [];
 
-// Roteamento
+$container[PDO::class] = $tenantPdo;
+$container[EmailService::class] = new EmailService();
+$container[ValidationService::class] = new ValidationService();
+$container[UserRepository::class] = new UserRepository($container[PDO::class]);
+$container[UserService::class] = new UserService(
+    $container[UserRepository::class],
+    $container[EmailService::class],
+    $container[ValidationService::class]
+);
+$container[UserController::class] = new UserController($container[UserService::class]);
+
+// --- Roteamento ---
+$method = $_SERVER['REQUEST_METHOD'];
+$route = $_GET['route'] ?? '';
+$prefix = 'UserManager/public/';
+if (strpos($route, $prefix) === 0) {
+    $route = substr($route, strlen($prefix));
+}
+$path = '/' . trim($route, '/');
+
 $routes = [
     'POST /register' => [UserController::class, 'register'],
     'POST /verify-email' => [UserController::class, 'verifyEmail'],
@@ -73,14 +89,11 @@ $routes = [
     'POST /reset-password' => [UserController::class, 'resetPassword'],
 ];
 
-// Adiciona uma rota para a raiz, se necessário
 if ($path === '/' || $path === '') {
     if ($method === 'GET') {
-        json_response(['status' => 'success', 'message' => 'API do UserManager está online.']);
-    } else {
-        json_response(['status' => 'error', 'message' => 'Método não permitido para a raiz.'], 405);
+        json_response(['status' => 'success', 'message' => "API do UserManager está online para a aplicação: {$application['app_name']}."], 200);
     }
-    exit;
+    json_response(['status' => 'error', 'message' => 'Método não permitido para a raiz.'], 405);
 }
 
 $routeKey = "$method $path";
@@ -88,8 +101,8 @@ $routeKey = "$method $path";
 if (array_key_exists($routeKey, $routes)) {
     list($controllerClass, $methodName) = $routes[$routeKey];
     
-    // Resolve o controller a partir do container
-    $controller = $dependencies[$controllerClass]($dependencies);
+    // Resolve o controller diretamente do container já montado
+    $controller = $container[$controllerClass];
     
     // Chama o método
     $controller->$methodName();

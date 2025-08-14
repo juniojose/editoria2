@@ -66,9 +66,9 @@
 
 ## Fase 4: Arquitetura Multi-Inquilino e Segurança de Aplicação (Iniciada em 14/08/2025)
 
-1.  **Gerenciamento de Aplicações (Inquilinos):** A FAZER
-    *   Criar migração para a tabela `applications`.
-    *   Implementar script para geração de tokens de API.
+1.  **Gerenciamento de Aplicações (Inquilinos):** OK
+    *   Criada migração para a tabela `applications`.
+    *   Implementado script `generate-token.php` para geração de tokens de API.
 
 2.  **Autenticação e Conexão Dinâmica:** A FAZER
     *   Implementar middleware para validação do `X-API-Token`.

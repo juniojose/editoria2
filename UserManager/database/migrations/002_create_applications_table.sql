@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS applications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    app_name VARCHAR(255) NOT NULL,
+    api_token VARCHAR(255) NOT NULL UNIQUE,
+    db_host VARCHAR(255) NOT NULL,
+    db_port INT NOT NULL,
+    db_database VARCHAR(255) NOT NULL,
+    db_username VARCHAR(255) NOT NULL,
+    db_password VARCHAR(255) NOT NULL,
+    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

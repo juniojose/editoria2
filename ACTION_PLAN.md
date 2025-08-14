@@ -64,6 +64,15 @@
 
 ---
 
-## Projeto Concluído
+## Fase 4: Arquitetura Multi-Inquilino e Segurança de Aplicação (Iniciada em 14/08/2025)
 
-Todas as fases do plano de ação para o microserviço `UserManager` foram concluídas com sucesso.
+1.  **Gerenciamento de Aplicações (Inquilinos):** A FAZER
+    *   Criar migração para a tabela `applications`.
+    *   Implementar script para geração de tokens de API.
+
+2.  **Autenticação e Conexão Dinâmica:** A FAZER
+    *   Implementar middleware para validação do `X-API-Token`.
+    *   Refatorar o container de DI para criar conexões de banco de dados dinâmicas.
+
+3.  **Integração e Finalização:** A FAZER
+    *   Atualizar a documentação da API com as novas regras de autenticação.

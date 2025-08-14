@@ -1,32 +1,30 @@
 # Microserviço UserManager
 
-Este é um microserviço PHP para gerenciamento de usuários, responsável por registro, verificação de e-mail e redefinição de senha.
+Este é um microserviço PHP para gerenciamento de usuários, responsável por registro, verificação de e-mail e redefinição de senha. O serviço opera em um modelo **multi-inquilino**, onde cada aplicação cliente possui seu próprio banco de dados de usuários.
+
+## Autenticação
+
+Todas as requisições para a API devem incluir um token de autenticação de aplicação no cabeçalho HTTP.
+
+*   **Cabeçalho:** `X-API-Token`
+*   **Valor:** O token de API fornecido para a sua aplicação.
+
+Requisições sem um token válido resultarão em uma resposta `401 Unauthorized` ou `403 Forbidden`.
 
 ## Configuração
 
-1.  **Variáveis de Ambiente:**
-    *   Copie o arquivo `.env.example` para um novo arquivo chamado `.env`.
-    *   Preencha as variáveis de ambiente no arquivo `.env` com as configurações do seu banco de dados e servidor de e-mail (SMTP).
+1.  **Banco de Dados de Gerenciamento:**
+    *   O arquivo `.env` na raiz do `UserManager` deve conter as credenciais para o **banco de dados de gerenciamento**. Este banco de dados contém a tabela `applications` que armazena os tokens e as credenciais de banco de dados de cada inquilino.
 
+2.  **Provisionamento de Inquilinos (Aplicações):**
+    *   Para registrar uma nova aplicação cliente, use o script `generate-token.php` na linha de comando:
+    ```bash
+    php generate-token.php <nome_app> <db_host> <db_port> <db_database> <db_username> <db_password>
     ```
-    DB_HOST=seu_host
-    DB_PORT=sua_porta
-    DB_DATABASE=seu_banco_de_dados
-    DB_USERNAME=seu_usuario
-    DB_PASSWORD=sua_senha
+    *   Este comando irá registrar a aplicação no banco de dados de gerenciamento e retornar o `API Token` que deverá ser usado no cabeçalho `X-API-Token`.
 
-    SMTP_HOST=seu_servidor_smtp
-    SMTP_PORT=sua_porta_smtp
-    SMTP_USERNAME=seu_usuario_smtp
-    SMTP_PASSWORD=sua_senha_smtp
-    SMTP_FROM_EMAIL=seu_email_de_envio
-    SMTP_FROM_NAME="Seu Nome"
-
-    APP_URL=http://localhost/seu_projeto/UserManager/public
-    ```
-
-2.  **Dependências:**
-    *   Navegue até o diretório `UserManager` e execute o Composer para instalar as dependências.
+3.  **Dependências:**
+    *   Execute o Composer para instalar as dependências.
     ```bash
     composer install
     ```
@@ -40,7 +38,9 @@ Todos os endpoints esperam e retornam dados no formato JSON.
 ### 1. Registrar Novo Usuário
 
 *   **Endpoint:** `POST /register`
-*   **Descrição:** Registra um novo usuário no sistema e envia um e-mail de verificação.
+*   **Descrição:** Registra um novo usuário no banco de dados do inquilino e envia um e-mail de verificação.
+*   **Cabeçalhos (Headers):**
+    *   `X-API-Token`: `seu_token_de_api`
 *   **Corpo da Requisição (JSON):**
     ```json
     {
@@ -63,9 +63,9 @@ Todos os endpoints esperam e retornam dados no formato JSON.
     }
     ```
 *   **Respostas de Erro:**
-    *   `400 Bad Request`: Campos ausentes, JSON inválido, ou dados de validação incorretos (e-mail, senha, CPF/CNPJ).
+    *   `401/403`: Token de API ausente ou inválido.
+    *   `400 Bad Request`: Campos ausentes, JSON inválido, ou dados de validação incorretos.
     *   `409 Conflict`: E-mail ou CPF/CNPJ já cadastrado.
-    *   `500 Internal Server Error`: Erro ao salvar o usuário ou enviar o e-mail.
 
 ---
 
@@ -73,6 +73,8 @@ Todos os endpoints esperam e retornam dados no formato JSON.
 
 *   **Endpoint:** `POST /verify-email`
 *   **Descrição:** Ativa a conta de um usuário a partir do token enviado para o e-mail.
+*   **Cabeçalhos (Headers):**
+    *   `X-API-Token`: `seu_token_de_api`
 *   **Corpo da Requisição (JSON):**
     ```json
     {
@@ -87,16 +89,18 @@ Todos os endpoints esperam e retornam dados no formato JSON.
     }
     ```
 *   **Respostas de Erro:**
+    *   `401/403`: Token de API ausente ou inválido.
     *   `400 Bad Request`: Token ausente.
-    *   `404 Not Found`: Token inválido ou expirado.
-    *   `409 Conflict`: O e-mail já foi verificado.
+    *   `404 Not Found`: Token de verificação inválido ou expirado.
 
 ---
 
 ### 3. Solicitar Redefinição de Senha
 
 *   **Endpoint:** `POST /forgot-password`
-*   **Descrição:** Inicia o processo de redefinição de senha. Envia um e-mail com um link para o usuário.
+*   **Descrição:** Inicia o processo de redefinição de senha.
+*   **Cabeçalhos (Headers):**
+    *   `X-API-Token`: `seu_token_de_api`
 *   **Corpo da Requisição (JSON):**
     ```json
     {
@@ -110,14 +114,15 @@ Todos os endpoints esperam e retornam dados no formato JSON.
         "message": "Se um usuário com este e-mail existir, um link de redefinição de senha foi enviado."
     }
     ```
-    *Nota: A resposta é sempre a mesma para evitar a enumeração de usuários.*
 
 ---
 
 ### 4. Redefinir a Senha
 
 *   **Endpoint:** `POST /reset-password`
-*   **Descrição:** Define uma nova senha para o usuário utilizando o token de redefinição.
+*   **Descrição:** Define uma nova senha para o usuário.
+*   **Cabeçalhos (Headers):**
+    *   `X-API-Token`: `seu_token_de_api`
 *   **Corpo da Requisição (JSON):**
     ```json
     {
@@ -133,6 +138,6 @@ Todos os endpoints esperam e retornam dados no formato JSON.
     }
     ```
 *   **Respostas de Erro:**
+    *   `401/403`: Token de API ausente ou inválido.
     *   `400 Bad Request`: Token ou nova senha ausentes, ou a nova senha é fraca.
-    *   `404 Not Found`: Token inválido.
-    *   `400 Bad Request`: Token expirado.
+    *   `404 Not Found`: Token de redefinição inválido.

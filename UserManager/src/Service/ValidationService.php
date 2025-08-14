@@ -1,6 +1,6 @@
 <?php
 
-namespace EditorIA2\\UserManager\\Service;
+namespace EditorIA2\UserManager\Service;
 
 use Exception;
 

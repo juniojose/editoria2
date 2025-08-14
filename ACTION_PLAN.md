@@ -82,3 +82,16 @@
 ## Projeto Concluído
 
 O microserviço `UserManager` foi refatorado com sucesso para uma arquitetura multi-inquilino segura. Todas as fases do plano de ação foram concluídas.
+
+---
+
+## Fase 5: Testes de Integração (Concluída em 14/08/2025)
+
+1.  **Testes de Segurança:** OK
+    *   Validado o bloqueio de acesso para requisições sem token ou com token inválido.
+
+2.  **Testes de Provisionamento:** OK
+    *   Validada a criação de um novo inquilino e a geração de token de API via script `generate-token.php`.
+
+3.  **Testes de Funcionalidade do Inquilino:** OK
+    *   Validado o ciclo de vida completo do usuário (registro, verificação de e-mail, solicitação de nova senha e redefinição de senha) usando o token de API do inquilino.

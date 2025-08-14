@@ -14,16 +14,22 @@ Requisições sem um token válido resultarão em uma resposta `401 Unauthorized
 ## Configuração
 
 1.  **Banco de Dados de Gerenciamento:**
-    *   O arquivo `.env` na raiz do `UserManager` deve conter as credenciais para o **banco de dados de gerenciamento**. Este banco de dados contém a tabela `applications` que armazena os tokens e as credenciais de banco de dados de cada inquilino.
+    *   O arquivo `.env` na raiz do `UserManager` deve conter as credenciais para o **banco de dados de gerenciamento**. Este banco de dados contém a tabela `applications`.
 
-2.  **Provisionamento de Inquilinos (Aplicações):**
-    *   Para registrar uma nova aplicação cliente, use o script `generate-token.php` na linha de comando:
+2.  **Estrutura do Banco de Dados (Migrations):**
+    *   Antes de usar o serviço, você precisa garantir que as tabelas existam.
+    *   **Tabela de Aplicações:** Execute o script `database/migrations/002_create_applications_table.sql` no seu banco de dados de gerenciamento.
+    *   **Tabela de Usuários:** Para cada banco de dados de inquilino, execute o script `database/migrations/001_create_users_table.sql`.
+
+3.  **Provisionamento de Inquilinos (Aplicações):**
+    *   Para registrar uma nova aplicação cliente, use o script `generate-token.php` na linha de comando. Lembre-se de envolver senhas com caracteres especiais em aspas simples.
+    *   **Exemplo:**
     ```bash
-    php generate-token.php <nome_app> <db_host> <db_port> <db_database> <db_username> <db_password>
+    php generate-token.php nome_da_app localhost 3306 banco_de_dados_do_inquilino usuario_do_bd 'senha_do_bd!@#'
     ```
     *   Este comando irá registrar a aplicação no banco de dados de gerenciamento e retornar o `API Token` que deverá ser usado no cabeçalho `X-API-Token`.
 
-3.  **Dependências:**
+4.  **Dependências:**
     *   Execute o Composer para instalar as dependências.
     ```bash
     composer install

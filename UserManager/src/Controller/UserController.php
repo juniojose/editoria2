@@ -2,19 +2,22 @@
 
 namespace EditorIA2\UserManager\Controller;
 
-use EditorIA2\UserManager\Repository\UserRepository;
-use EditorIA2\UserManager\Service\EmailService;
 use EditorIA2\UserManager\Service\UserService;
 use Exception;
 
 class UserController
 {
+    private UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function register()
     {
-        // a. Get raw POST data
         $input = json_decode(file_get_contents('php://input'), true);
 
-        // c. Basic validation
         if (json_last_error() !== JSON_ERROR_NONE) {
             json_response(['status' => 'error', 'message' => 'JSON inválido.'], 400);
             return;
@@ -31,16 +34,8 @@ class UserController
         }
 
         try {
-            // d. Manual Dependency Injection
-            $pdo = require __DIR__ . '/../../config/database.php';
-            $userRepository = new UserRepository($pdo);
-            $emailService = new EmailService();
-            $userService = new UserService($userRepository, $emailService);
+            $newUser = $this->userService->registerUser($name, $email, $cpfCnpj, $password);
 
-            // e. Call the service
-            $newUser = $userService->registerUser($name, $email, $cpfCnpj, $password);
-
-            // f. Success response
             json_response([
                 'status' => 'success',
                 'message' => 'Usuário registrado com sucesso. Verifique seu e-mail para ativar a conta.',
@@ -52,7 +47,6 @@ class UserController
             ], 201);
 
         } catch (Exception $e) {
-            // g. Error response
             $statusCode = $e->getCode() >= 400 ? $e->getCode() : 500;
             json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
         }
@@ -75,15 +69,8 @@ class UserController
         }
 
         try {
-            $pdo = require __DIR__ . '/../../config/database.php';
-            $userRepository = new UserRepository($pdo);
-            $emailService = new EmailService(); // Embora não usado diretamente por verifyEmail, é necessário para o construtor do UserService
-            $userService = new UserService($userRepository, $emailService);
-
-            $userService->verifyEmail($token);
-
+            $this->userService->verifyEmail($token);
             json_response(['status' => 'success', 'message' => 'E-mail verificado com sucesso.']);
-
         } catch (Exception $e) {
             $statusCode = $e->getCode() >= 400 ? $e->getCode() : 500;
             json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
@@ -101,16 +88,8 @@ class UserController
         }
 
         try {
-            $pdo = require __DIR__ . '/../../config/database.php';
-            $userRepository = new UserRepository($pdo);
-            $emailService = new EmailService();
-            $userService = new UserService($userRepository, $emailService);
-
-            $userService->forgotPassword($email);
-
-            // Resposta genérica para não revelar se um e-mail existe no sistema
+            $this->userService->forgotPassword($email);
             json_response(['status' => 'success', 'message' => 'Se um usuário com este e-mail existir, um link de redefinição de senha foi enviado.']);
-
         } catch (Exception $e) {
             $statusCode = $e->getCode() >= 400 ? $e->getCode() : 500;
             json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
@@ -129,15 +108,8 @@ class UserController
         }
 
         try {
-            $pdo = require __DIR__ . '/../../config/database.php';
-            $userRepository = new UserRepository($pdo);
-            $emailService = new EmailService();
-            $userService = new UserService($userRepository, $emailService);
-
-            $userService->resetPassword($token, $password);
-
+            $this->userService->resetPassword($token, $password);
             json_response(['status' => 'success', 'message' => 'Senha redefinida com sucesso.']);
-
         } catch (Exception $e) {
             $statusCode = $e->getCode() >= 400 ? $e->getCode() : 500;
             json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);

@@ -16,8 +16,8 @@
 ## Fase 3: Finalização e Boas Práticas
 
 1.  **Implementação do Serviço de Envio de E-mail:** OK
-2.  **Segurança e Validação:** A FAZER
-3.  **Documentação:** A FAZER
+2.  **Segurança e Validação:** OK
+3.  **Documentação:** OK
 
 ---
 
@@ -50,3 +50,20 @@
     *   A lógica de negócio para solicitar (`/forgot-password`) e executar (`/reset-password`) a redefinição foi implementada no `UserService` e `UserController`.
     *   Uma página (`reset-password.php`) foi criada para a interface do usuário.
     *   O fluxo completo, desde a solicitação por e-mail até a atualização da senha, foi **testado e validado com sucesso em ambiente de servidor em 13/08/2025.**
+
+*   **Segurança e Validação (CONCLUÍDO em 14/08/2025):**
+    *   O `UserController` foi refatorado para usar injeção de dependência, eliminando código duplicado.
+    *   Um `ValidationService` foi criado para centralizar e fortalecer a validação de dados.
+    *   Foram implementadas regras de higienização (prevenção de XSS), validação de formato de e-mail, complexidade de senha e validação de CPF/CNPJ.
+    *   O `UserService` foi atualizado para utilizar o `ValidationService`, garantindo que todos os dados de entrada sejam validados de forma consistente.
+    *   O `index.php` foi ajustado com um container de injeção de dependência para gerenciar a criação dos serviços e controllers.
+
+*   **Documentação (CONCLUÍDO em 14/08/2025):**
+    *   Foi criado um arquivo `README.md` detalhado na raiz do diretório `UserManager`.
+    *   A documentação inclui instruções de configuração do ambiente (`.env`), instalação de dependências (`composer install`) e o detalhamento completo de todos os endpoints da API, com exemplos de requisições e respostas.
+
+---
+
+## Projeto Concluído
+
+Todas as fases do plano de ação para o microserviço `UserManager` foram concluídas com sucesso.

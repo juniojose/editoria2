@@ -1,8 +1,8 @@
 <?php
 
-namespace EditorIA2\UserManager\Repository;
+namespace Kmkz\UserManager\Repository;
 
-use EditorIA2\UserManager\Model\User;
+use Kmkz\UserManager\Model\User;
 use PDO;
 
 class UserRepository

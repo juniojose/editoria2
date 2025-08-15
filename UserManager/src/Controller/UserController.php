@@ -1,8 +1,8 @@
 <?php
 
-namespace EditorIA2\UserManager\Controller;
+namespace Kmkz\UserManager\Controller;
 
-use EditorIA2\UserManager\Service\UserService;
+use Kmkz\UserManager\Service\UserService;
 use Exception;
 
 class UserController

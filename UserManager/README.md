@@ -1,5 +1,7 @@
 # Microserviço UserManager
 
+*Este projeto é mantido pela Kmkz.*
+
 Este é um microserviço PHP para gerenciamento de usuários, responsável por registro, verificação de e-mail e redefinição de senha. O serviço opera em um modelo **multi-inquilino**, onde cada aplicação cliente possui seu próprio banco de dados de usuários.
 
 ## Autenticação

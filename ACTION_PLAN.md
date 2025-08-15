@@ -95,3 +95,13 @@ O microserviço `UserManager` foi refatorado com sucesso para uma arquitetura mu
 
 3.  **Testes de Funcionalidade do Inquilino:** OK
     *   Validado o ciclo de vida completo do usuário (registro, verificação de e-mail, solicitação de nova senha e redefinição de senha) usando o token de API do inquilino.
+
+## Fase 6: Refatoração do Namespace (Concluída em 15/08/2025)
+
+1.  **Renomeação do Namespace:** OK
+    *   O namespace base da aplicação foi alterado de `EditorIA2` para `Kmkz` para refletir uma identidade de projeto mais genérica e adequada à arquitetura multi-inquilino.
+    *   Todos os arquivos PHP, incluindo controllers, services, repositories, models e o front-controller, foram atualizados para usar o novo namespace `Kmkz\UserManager`.
+    *   O arquivo `composer.json` foi atualizado para corresponder à nova estrutura de namespace (`"name": "kmkz/user-manager"` e a seção `psr-4`).
+
+2.  **Atualização da Documentação:** OK
+    *   Os arquivos `README.md` e `ACTION_PLAN.md` foram atualizados para documentar a mudança.

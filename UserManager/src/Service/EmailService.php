@@ -1,6 +1,6 @@
 <?php
 
-namespace EditorIA2\UserManager\Service;
+namespace Kmkz\UserManager\Service;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

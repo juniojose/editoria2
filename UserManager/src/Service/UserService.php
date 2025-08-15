@@ -1,9 +1,9 @@
 <?php
 
-namespace EditorIA2\UserManager\Service;
+namespace Kmkz\UserManager\Service;
 
-use EditorIA2\UserManager\Model\User;
-use EditorIA2\UserManager\Repository\UserRepository;
+use Kmkz\UserManager\Model\User;
+use Kmkz\UserManager\Repository\UserRepository;
 use Exception;
 
 class UserService

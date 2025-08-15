@@ -1,6 +1,6 @@
 <?php
 
-namespace EditorIA2\UserManager\Model;
+namespace Kmkz\UserManager\Model;
 
 class User
 {

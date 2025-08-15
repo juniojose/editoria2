@@ -1,10 +1,10 @@
 <?php
 
-use EditorIA2\UserManager\Controller\UserController;
-use EditorIA2\UserManager\Repository\UserRepository;
-use EditorIA2\UserManager\Service\EmailService;
-use EditorIA2\UserManager\Service\UserService;
-use EditorIA2\UserManager\Service\ValidationService;
+use Kmkz\UserManager\Controller\UserController;
+use Kmkz\UserManager\Repository\UserRepository;
+use Kmkz\UserManager\Service\EmailService;
+use Kmkz\UserManager\Service\UserService;
+use Kmkz\UserManager\Service\ValidationService;
 
 // Define o header para JSON
 header("Content-Type: application/json; charset=UTF-8");

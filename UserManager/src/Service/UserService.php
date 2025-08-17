@@ -22,6 +22,32 @@ class UserService
     /**
      * @throws Exception
      */
+    public function loginUser(string $email, string $password): User
+    {
+        // 1. Higienização e Validação
+        $safeEmail = $this->validationService->sanitizeString($email);
+        $this->validationService->validateEmail($safeEmail);
+
+        // 2. Encontrar o usuário
+        $user = $this->userRepository->findByEmail($safeEmail);
+
+        if (!$user || $user->status !== 'active') {
+            throw new Exception("Credenciais inválidas ou usuário inativo.", 401); // 401 Unauthorized
+        }
+
+        // 3. Verificar a senha
+        if (!password_verify($password, $user->password_hash)) {
+            throw new Exception("Credenciais inválidas ou usuário inativo.", 401);
+        }
+
+        // 4. Retornar o usuário (sem o hash da senha)
+        unset($user->password_hash);
+        return $user;
+    }
+
+    /**
+     * @throws Exception
+     */
     public function registerUser(string $name, string $email, string $cpfCnpj, string $password): User
     {
         // 1. Higienização e Validação

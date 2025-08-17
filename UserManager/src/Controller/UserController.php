@@ -14,6 +14,45 @@ class UserController
         $this->userService = $userService;
     }
 
+    public function login()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            json_response(['status' => 'error', 'message' => 'JSON inválido.'], 400);
+            return;
+        }
+
+        $email = $input['email'] ?? null;
+        $password = $input['password'] ?? null;
+
+        if (!$email || !$password) {
+            json_response(['status' => 'error', 'message' => 'Campos obrigatórios ausentes: email, password.'], 400);
+            return;
+        }
+
+        try {
+            $user = $this->userService->loginUser($email, $password);
+
+            // Iniciar sessão ou gerar token JWT aqui, se necessário.
+            // Por enquanto, apenas retornamos os dados do usuário.
+
+            json_response([
+                'status' => 'success',
+                'message' => 'Login bem-sucedido.',
+                'user' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'cpf_cnpj' => $user->cpf_cnpj
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            $statusCode = $e->getCode() >= 400 ? $e->getCode() : 401;
+            json_response(['status' => 'error', 'message' => $e->getMessage()], $statusCode);
+        }
+    }
+
     public function register()
     {
         $input = json_decode(file_get_contents('php://input'), true);

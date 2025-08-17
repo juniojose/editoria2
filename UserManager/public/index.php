@@ -83,6 +83,7 @@ if (strpos($route, $prefix) === 0) {
 $path = '/' . trim($route, '/');
 
 $routes = [
+    'POST /login' => [UserController::class, 'login'],
     'POST /register' => [UserController::class, 'register'],
     'POST /verify-email' => [UserController::class, 'verifyEmail'],
     'POST /forgot-password' => [UserController::class, 'forgotPassword'],

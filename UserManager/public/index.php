@@ -1,4 +1,11 @@
 <?php
+// --- Início do Bloco de Diagnóstico ---
+header("Content-Type: text/plain; charset=UTF-8");
+echo "--- CONTEÚDO DO ARQUIVO NO SERVIDOR ---\\n\\n";
+echo file_get_contents(__FILE__);
+echo "\\n\\n--- FIM DO CONTEÚDO ---";
+exit;
+// --- Fim do Bloco de Diagnóstico ---
 
 use Kmkz\UserManager\Controller\UserController;
 use Kmkz\UserManager\Repository\UserRepository;

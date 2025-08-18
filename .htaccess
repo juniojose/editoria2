@@ -2,7 +2,7 @@
     RewriteEngine On
 
     # Define a base para as regras de reescrita
-    RewriteBase /editoria2/
+    RewriteBase /kmkz/
 
     # Se o arquivo ou diretório solicitado não existir, reescreve para o index.php
     RewriteCond %{REQUEST_FILENAME} !-f

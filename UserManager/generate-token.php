@@ -28,7 +28,7 @@ function get_management_pdo(): PDO
 
 // --- Lógica do Script ---
 
-if ($argc < 7) {
+if ($argc < 6) {
     echo "Uso: php generate-token.php <app_name> <db_host> <db_port> <db_database> <db_username> <db_password>\n";
     exit(1);
 }

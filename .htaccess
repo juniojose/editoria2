@@ -4,7 +4,11 @@
     # Define a base para as regras de reescrita
     RewriteBase /kmkz/
 
-    # Se o arquivo ou diretório solicitado não existir, reescreve para o index.php
+    # Adicionado: Regra para o acesso direto à raiz do /kmkz/
+    # Captura a string vazia (a raiz) e a envia para o index.php
+    RewriteRule ^$ UserManager/public/index.php [L]
+
+    # Mantido: Regra para todas as outras requisições (ex: /login)
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ UserManager/public/index.php?route=$1 [L,QSA]
